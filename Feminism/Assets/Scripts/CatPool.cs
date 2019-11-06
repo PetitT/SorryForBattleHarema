@@ -46,19 +46,16 @@ public class CatPool : MonoBehaviour
         return position;
     }
 
-    public void GetCat(Vector3 spawnPosition)
+    public GameObject GetCat(Vector3 spawnPosition)
     {
-        GameObject kitty = catList.Where(x => x.activeSelf == false).FirstOrDefault();
-        if (kitty != null)
+        GameObject kitty = catList.Where(x => !x.activeSelf).FirstOrDefault();
+        if (!kitty)
         {
-            kitty.transform.position = spawnPosition;
-            kitty.SetActive(true);
+            kitty = Instantiate(cat);
+            catList.Add(kitty);
         }
-        else
-        {
-            GameObject newCat = Instantiate(cat);
-            catList.Add(newCat);
-            newCat.transform.position = spawnPosition;
-        }
+        kitty.transform.position = spawnPosition;
+        kitty.SetActive(true);
+        return kitty;
     }
 }
