@@ -22,16 +22,12 @@ public class ECSCat : MonoBehaviour
     {
         EntityManager entityManager = World.Active.EntityManager;
 
-        EntityArchetype entityArchetype = entityManager.CreateArchetype(
-            typeof(RenderMesh),
-            typeof(Translation),
-            typeof(LocalToWorld),
-            typeof(Scale),
-            typeof(Rotation),
-            typeof(FallComponent),
-            typeof(RotationSpeedComponent)
-            );
+        EntityArchetype entityArchetype = CreateEntityArchetype(entityManager);
+        CreateEntities(entityManager, entityArchetype);
+    }
 
+    private void CreateEntities(EntityManager entityManager, EntityArchetype entityArchetype)
+    {
         NativeArray<Entity> entityArray = new NativeArray<Entity>(numberOfCats, Allocator.Temp);
         entityManager.CreateEntity(entityArchetype, entityArray);
 
@@ -53,6 +49,19 @@ public class ECSCat : MonoBehaviour
         }
 
         entityArray.Dispose();
+    }
+
+    private static EntityArchetype CreateEntityArchetype(EntityManager entityManager)
+    {
+        return entityManager.CreateArchetype(
+            typeof(RenderMesh),
+            typeof(Translation),
+            typeof(LocalToWorld),
+            typeof(Scale),
+            typeof(Rotation),
+            typeof(FallComponent),
+            typeof(RotationSpeedComponent)
+            );
     }
 
     private float GetRandomRotationSpeed()

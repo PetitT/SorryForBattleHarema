@@ -16,6 +16,12 @@ public class playVideo : MonoBehaviour
         elevator.onElevatorFinish += ElevatorFinishHandler;
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.V))
+            StartCoroutine(PlayVid());
+    }
+
     private void ElevatorFinishHandler()
     {
         StartCoroutine("PlayVid");
@@ -25,6 +31,7 @@ public class playVideo : MonoBehaviour
     {
         yield return new WaitForSeconds(2);
         cache1.SetActive(false);
+        cache2.SetActive(false);
         videoPlayer.Play();
         yield return new WaitForSeconds((float)videoPlayer.clip.length + 1);
         cache2.SetActive(true);
