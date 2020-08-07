@@ -7,7 +7,7 @@ public class Elevator : MonoBehaviour
 {
     public Transform top;
     public float speed;
-    private bool isMoving = false;
+    private bool hasMoved = false;
     private float YTarget;
     private Vector3 destination;
     private GameObject player;
@@ -20,32 +20,60 @@ public class Elevator : MonoBehaviour
         destination = new Vector3(transform.position.x, YTarget, transform.position.z);
     }
 
-    private void Update()
-    {
-        if (isMoving)
-            if (transform.position.y >= destination.y - 0.1f)
-            {
-                isMoving = false;
-                transform.DetachChildren();
-                player.GetComponent<CharacterController>().enabled = true;
-                onElevatorFinish?.Invoke();
-            }
+    //private void Update()
+    //{
+    //    if (isMoving)
+    //        if (transform.position.y >= destination.y - 0.1f)
+    //        {
+    //            isMoving = false;
+    //            transform.DetachChildren();
+    //            player.GetComponent<CharacterController>().enabled = true;
+    //            onElevatorFinish?.Invoke();
+    //            Destroy(this);
+    //        }
 
-        if (isMoving)
+    //    if (isMoving)
+    //    {
+    //        transform.position = Vector3.Lerp(transform.position, destination, speed * Time.deltaTime);
+    //    }
+    //}
+
+    //private void OnTriggerStay(Collider other)
+    //{
+    //    if (other.CompareTag("Player"))
+    //    {
+    //        isMoving = true;
+    //        player = other.gameObject;
+    //        other.transform.parent = gameObject.transform;
+    //        other.GetComponent<CharacterController>().enabled = false;
+    //    }
+    //}
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!hasMoved)
+        {
+            if (other.CompareTag("Player"))
+            {
+                StartCoroutine(GoUp(other.gameObject));
+                hasMoved = true;
+            }
+        }
+    }
+
+    private IEnumerator GoUp(GameObject player)
+    {
+        player.transform.parent = gameObject.transform;
+        player.GetComponent<CharacterController>().enabled = false;
+
+        while (transform.position.y < destination.y - 0.1f)
         {
             transform.position = Vector3.Lerp(transform.position, destination, speed * Time.deltaTime);
+            yield return null;
         }
-    }
 
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            isMoving = true;
-            player = other.gameObject;
-            other.transform.parent = gameObject.transform;
-            other.GetComponent<CharacterController>().enabled = false;
-        }
+        player.transform.parent = null;
+        player.GetComponent<CharacterController>().enabled = true;
+        onElevatorFinish?.Invoke();
     }
-
 }
